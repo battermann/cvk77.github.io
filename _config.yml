@@ -4,7 +4,7 @@ email: christoph@vonkruechten.de
 description: > # this means to ignore newlines until "baseurl:"
     Dies ist mein Blog.
 baseurl: "" # the subpath of your site, e.g. /blog/
-url: "https://cvk77.github.io" # the base hostname & protocol for your site
+url: "https://blog.vonkruechten.de" # the base hostname & protocol for your site
 twitter_username: cvk77
 github_username:  cvk77
 
