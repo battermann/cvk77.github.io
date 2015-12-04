@@ -4,7 +4,7 @@ When tasked to extract information from a string, most seasoned developers - esp
 
 In functional programming, it's common to use parser combinators that combine small basic parsers to build a complex ruleset. Erik Meijers functional programming MOOC at edX recently covered the topic, closely following Graham Hutton's great book "Programming in Haskell".
 
-Let's see how parser combinators can be used in an (admittedly easy) context:
+Let's see how parser combinators can be used in an (admittedly simple) context.
 
 One of our customers runs a fascinating webservice: Using a straightforward URL scheme, you can remotely control a rendering engine that can effectively combines hundreds of different car parts in order to render a photorealistic image of a specific car configuration.
 
@@ -12,7 +12,7 @@ We will use parser combinators to write a parser that extracts the configuration
 
 ## The webservice
 
-As mentioned before, the URL format is quite straightforward, but at first glance it seems to be more developer-friendly than parser-friendly, with one weird quirk. It consists of the following parts:
+As mentioned before, the URL format is quite straightforward, but at first glance it seems to be more developer-friendly than parser-friendly, but more about that later. It consists of the following parts:
 
 1. The country version's iso code
 1. Car metadata (model is mandatory, body and grade are optional)
@@ -40,27 +40,30 @@ As you can see, there is quite a bit of inconsistency: the country code doesn't 
 
 We will be using Haskell's Parsec library, as it seems well-suited for this task: It's as straightforward as something that calls itself "industrial strength, monadic parser combinator" can be and there are many clones and implementations in mainstream languages like Java, C#, Python or F#.
 
-Don't worry if you don't know Haskell - the parsers are so tiny that you should be able to understand what's going on without knowing the language. But in the footnotes you'll find an example written for  JParsec in Java.
+Don't worry if you don't know Haskell - the parsers are so tiny that you should be able to understand what's going on without knowing the language. If you're really interested in seeing how the same parsers look in Java's JParsec, you'll find the code in the footnotes.
 
-As mentioned before, parser combinators build up complex parsers by combining simple building blocks. It's fascinating that all parsers are functions and can be executed independently, so everything is easily maintainable and testable.
+As mentioned before, parser combinators build up complex parsers by combining simple building blocks. It's fascinating that all parsers are independent and can be executed on their own, so everything is easily maintainable and testable. 
 
 ## Writing the parser
 
-As we're dealing with an URL it's quite obvious that even without looking at the example above, we will encounter "things delimited by slashes", so let's first define "things" and write a parser for that and - for lack of a better name - let's call them `value` and `part`:
+We're dealing with an URL, so it's quite obvious that we will encounter "things delimited by slashes". According to the webservice specifications, the values can only consist of characters, numbers and the symbols + and -. We'll start with a parser that reads these symbols and call it `value`:
 
 ```
 value = do
     many1 $ choice [alphaNum, char '+', char '-']
+```
 
+Let's ignore the `do` for now and just assume it means "expect this in sequential order". `value` parses one or more (`many1`) letters, numbers (`alphaNum`), plusses (`char '+'`) or minuses (`char '-'`). If it encounters any other symbol, it will fail.
+
+Let's combine this parser with another parser that reads the separate parts of our URL (you remember: things delimited by slashes). For lack of a better name, let's call it `part`.
+
+```
 part = do
     char '/'
     value
 ```
 
-Let's ignore the `do` for now and just assume it means "expect this in sequential order".
-Now `value` parses one or more (`many1`) letters, numbers (`alphaNum`), plusses (`char '+'`) or minuses (`char '-'`) and `part` is defined as a parser that reads the character "/" followed by a value, returning the latter.
-
-The parser functions return either an error message if the parser didn't match or the extracted value. Haskell has an datatype called `Either` that represents values with two possibilities. By convention, Left is used to hold an error value and Right is used to hold a correct value.
+I mentioned earlier that parser functions either returns the value or fails. In imperative programming languages failing usually means that some kind of Exception will be thrown. Our parsers work a bit differently: Haskell has an datatype called `Either` that represents values with two possibilities called `Left` and `Right`. By convention, `Left` is used to hold an error value and `Right` is used to hold a correct value.
 
 Let's confirm in Haskell's REPL that our parsers work:
 
