@@ -38,7 +38,7 @@ As you can see, there is quite a bit of inconsistency: the country code doesn't 
 
 ## The library
 
-The basic idea of a parser is that it takes an input, reads ("consumes") it until it’s either done or fails and then returns both the result and the remaining unparsed string, which might be fed into subsequent parsers. In this example we will be using Haskell's Parsec library to manage this grunt work for us. It seems well-suited for this task, it's quite readably and as straightforward as something that calls itself "industrial strength, monadic parser combinator" can be. Also there are many clones and implementations in mainstream languages like Java, C#, Python or F#. 
+The basic idea of a parser is that it takes an input, reads ("consumes") it until it’s either done or fails and then returns both the result and the remaining unparsed string, which might be fed into subsequent parsers. In this example we will be using Haskell's Parsec library to manage this grunt work for us. It seems well-suited for this task, it's quite readably and as straightforward as something that calls itself "industrial strength, monadic parser combinator" can be. Also there are many clones and implementations in mainstream languages like Java, C#, Python or F#.
 
 As mentioned before, parser combinators are built up from simple building blocks combined to complex parsers. It's fascinating that all parsers are independent and can be executed on their own, so everything is easily maintainable and testable. Don't worry if you don't know Haskell - the parsers are so tiny any readable that you should be able to understand what's going on without knowing the language. If you're really interested in seeing how the same parsers look in Java's JParsec, you'll find the code in the footnotes.
 
@@ -139,7 +139,7 @@ This will obviously not work as it will read beyond the vehicle information and 
 Right ["ford","prefect","packs","pack307"]
 ```
 
-We obviously need a way to tell the parser where to stop. The problem is, that the parser works greedily - so any character that is already consumed stays consumed, even if the parser fails at a later point. 
+We need a way to tell the parser where to stop. That can be done with the `manyTill` parser that runs a parser until another parser matches. The problem is that the parser works greedily - so any character that is already consumed stays consumed, even if the parser fails at a later point. We can circumvent this by using the `try` statement that makes the parser only consume input when it's fully executed. 
 
 ```
 customization = do
@@ -150,24 +150,30 @@ vehicle = do
     manyTill part (lookAhead customization)
 ```
 
-Let's skip the rest.
+That's it, we don't need the rest:
 
 ```
 theRest = do
     skipMany anyChar
 ```
 
+Joining everything together:
+
 ```
 parser = do
     country <- country
     vehicle <- vehicle
     customization <- many1 customization
-    foo <- theRest
+    rest <- theRest
     eof
-    return (country, vehicle, customization, foo)
+    return (country, vehicle, customization, rest)
 ```
 
 ```
 > parse parser "https://example.org/de/vehicle/trabant/5-doors/0815+universal/options/1,4711,815/packs/p7/accessories/a,b,c/width/1024/height/768/exterior-45.jpg"
 Right ("de",["trabant","5-doors","0815+universal"],[["1","4711","815"],["p7"],["a","b","c"]])
 ```
+
+## What's next?
+
+TODO
