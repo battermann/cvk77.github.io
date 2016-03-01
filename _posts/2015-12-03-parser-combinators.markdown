@@ -164,7 +164,7 @@ vehicle = do
     manyTill part (lookAhead customization)
 ```
 
-That's it, we don't need the rest (`skipMany`):
+That's it, we don't need the rest (`skipMany`), but we still should consume it:
 
 ```
 theRest = do
@@ -206,20 +206,22 @@ parser = do
     country <- country
     vehicle <- vehicle
     customization <- many1 customization
-    rest <- theRest
+    theRest
     eof
-    return (country, vehicle, customization, rest)
+    return (country, vehicle, customization)
 ```
 
 Taking it for a test run:
 
 
 ```
-> parse parser "https://example.org/de/vehicle/trabant/5-doors/0815+universal/options/1,4711,815/packs/p7/accessories/a,b,c/width/1024/height/768/exterior-45.jpg"
+> parse parser "" "https://example.org/de/vehicle/trabant/5-doors/0815+universal/options/1,4711,815/packs/p7/accessories/a,b,c/width/1024/height/768/exterior-45.jpg"
 Right ("de",["trabant","5-doors","0815+universal"],[["1","4711","815"],["p7"],["a","b","c"]])
 ```
 
 Nice.
+
+You can find the complete source code here: [parser.hs](https://gist.github.com/cvk77/244bcdf7eb4f0f049221).
 
 ## What's next?
 
