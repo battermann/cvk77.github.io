@@ -234,4 +234,4 @@ As mentioned earlier, there are parser combinator libraries for many languages, 
 * [FParsec](http://www.quanttec.com/fparsec/) for F#
 * [PyParsing](http://pyparsing.wikispaces.com/) for Python
 
-If you want to know more about the details of the whole `do`-notation and `return`-stuff or just impress your friends with [Zygohistomorphic prepromorphisms](https://wiki.haskell.org/Zygohistomorphic_prepromorphisms), [Learn You A Haskell](http://learnyouahaskell.com/) is an excellent start. At the time of writing, Christopher Allen and Julie Moronuki are about 90% done with their [Haskell Book](http://haskellbook.com/). I'm sure it will be awesome.
+If you want to know more about the details of the whole `do`-notation and `return`-stuff or just impress your friends with [Zygohistomorphic prepromorphisms](https://wiki.haskell.org/Zygohistomorphic_prepromorphisms), [Learn You A Haskell](http://learnyouahaskell.com/) is an excellent start. At the time of writing, [Chris Allen](https://github.com/bitemyapp) and [Julie Moronuki](https://twitter.com/argumatronic) are about 90% done with their [Haskell Book](http://haskellbook.com/). I'm sure it will be awesome.
