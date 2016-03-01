@@ -203,12 +203,12 @@ Wrapping it all up, here's our parser:
 
 ```
 parser = do
-    country <- country
-    vehicle <- vehicle
-    customization <- many1 customization
+    c  <- country
+    v  <- vehicle
+    cs <- many1 customization
     theRest
     eof
-    return (country, vehicle, customization)
+    return (c, v, cs)
 ```
 
 Taking it for a test run:
