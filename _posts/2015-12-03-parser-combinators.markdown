@@ -4,9 +4,7 @@ When tasked to extract information from a string, most seasoned developers - esp
 
 In functional programming, it's common to use parser combinators that combine small basic parsers to build a complex ruleset. Erik Meijers [functional programming MOOC at edX](https://courses.edx.org/courses/DelftX/FP101x/3T2014/) recently covered the topic.
 
-Let's see how parser combinators can be used in an (admittedly simple) context.
-
-One of our customers runs a fascinating webservice: Using a easy-to-understand URL scheme, you can remotely control a rendering engine that can effectively combines hundreds of different car parts in order to render a photorealistic image of a specific car configuration.
+Let's see how parser combinators can be used in an (admittedly simple) context: One of our customers runs a fascinating webservice: Using a easy-to-understand URL scheme, you can remotely control a rendering engine that can effectively combines hundreds of different car parts in order to render a photorealistic image of a specific car configuration.
 
 We will use parser combinators to write a parser that extracts the configuration-specific data from such a webservice call.
 
