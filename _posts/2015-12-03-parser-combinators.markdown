@@ -227,9 +227,9 @@ Nice.
 
 This barely touches the surface of what Parsec is able to do. If you want to read more, an excellect starting point is chapter 16 of [Real World Haskell](http://book.realworldhaskell.org/read/using-parsec.html) by Bryan O'Sullivan, Don Stewart, and John Goerzen. It goes into much more detail, but expects quite a bit of Haskell knowledge. Also you can [Write yourself a Scheme in 48 Hours](https://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours/Parsing) using Parsec.
 
-As mentioned earlier, there are parser combinator libraries for most languages:
-# [JParsec](https://github.com/jparsec/jparsec) for Java
-# [FParsec](http://www.quanttec.com/fparsec/) for F#
-# [PyParsing](http://pyparsing.wikispaces.com/) for Python
+As mentioned earlier, there are parser combinator libraries for many languages, here's a short and in no way complete list:
+* [JParsec](https://github.com/jparsec/jparsec) for Java
+* [FParsec](http://www.quanttec.com/fparsec/) for F#
+* [PyParsing](http://pyparsing.wikispaces.com/) for Python
 
 If you want to know more about the details of the whole `do`-notation and `return`-stuff or just impress your friends with [Zygohistomorphic prepromorphisms](https://wiki.haskell.org/Zygohistomorphic_prepromorphisms), [Learn You A Haskell](http://learnyouahaskell.com/) is an excellent start. At the time of writing, Christopher Allen and Julie Moronuki are about 90% done with their [Haskell Book](http://haskellbook.com/). I'm sure it will be awesome.
