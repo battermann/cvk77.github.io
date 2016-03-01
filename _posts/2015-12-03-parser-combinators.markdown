@@ -173,9 +173,9 @@ theRest = do
     skipMany anyChar
 ```
 
-These are all the building blocks we need to parse the url, but we have to combine them. Up to this point, all parsers did something and returned the result after running all parsers, but what if we want the results of all parsers?
+These are all the building blocks we need to parse the url, but we have to combine them. Up to this point, all parsers did something and returned the last result _after_ running all parsers. What if we want the results of _all_ parsers, i.e. the in-betweens?
 
-Let's take a step back first and write a parser that reads exactly _two_ alphanumeric characters and then expects the input to end (`eof`):
+Let's take a step back first and write a parser that reads _exactly two_ alphanumeric characters and then expects the input to end (`eof`):
 
 ```
 twoChars = do
