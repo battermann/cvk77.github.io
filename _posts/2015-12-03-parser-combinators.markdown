@@ -162,7 +162,9 @@ This will obviously not work as it will read beyond the vehicle information and 
 Right ["ford","prefect","packs","pack307"]
 ```
 
-We need a way to tell the parser where to stop. That can be done with the `manyTill` parser that runs a parser until another parser matches. If we want to check for more than one parser, we can use `choice` which expects a list of parsers and tries them consecutively. The problem is that parsers works greedily - so any character that matches a parser and is therefor already consumed stays consumed, even if the parser should eventually fail. We can circumvent this by using `try` which makes the parser only consume input when it's fully executed.
+We need a way to tell the parser where to stop. That can be done with the `manyTill` parser that runs a parser until another parser matches. If we want to check for more than one parser, we can use `choice` which expects a list of parsers and tries them consecutively. The problem is that parsers works greedily - so any character that matches a parser and is therefor already consumed stays consumed, even if the parser should eventually fail. We can circumvent this by using `try` which makes the parser only consume input when it's fully executed. 
+
+The tricky part is: We don't want that either. We only want to check, _if_ a parser will succeed, but not actually consume anything. The `lookAhead` parser does exactly that.
 
 ```
 customization = do
