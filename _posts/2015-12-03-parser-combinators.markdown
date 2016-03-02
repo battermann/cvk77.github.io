@@ -1,12 +1,12 @@
 # Parser combinators
 
-When tasked to extract information from a string, most seasoned developers - especially the ones with some kind of Linux background - will resort to regular expressions. While regular expressions are incredibly powerful and very well suited for most parsing jobs, with increasing complexity they tend to become very cryptic or even unreadable.
+When tasked to extract information from a string, most seasoned developers - especially the ones with some kind of Linux background - will resort to regular expressions. While regular expressions are incredibly powerful and very well suited for most parsing jobs, they don't scale very well. With increasing complexity they tend to become very cryptic, if not unreadable.
 
-In functional programming, it's common to use parser combinators that combine small basic parsers to build a complex ruleset. Erik Meijers [functional programming MOOC at edX](https://courses.edx.org/courses/DelftX/FP101x/3T2014/) recently covered the topic.
+In functional programming, it's common to use parser combinators that combine small atomic parsers to build a complex ruleset.
 
-Let's see how parser combinators can be used in an (admittedly simple) context: One of our customers runs a fascinating webservice: Using a easy-to-understand URL scheme, you can remotely control a rendering engine that can effectively combines hundreds of different car parts in order to render a photorealistic image of a specific car configuration.
+Let's see how parser combinators can be used in an (admittedly simple) context. One of our customers runs a fascinating webservice: Using a easy-to-understand URL scheme, you can remotely control a rendering engine that can effectively combines hundreds of different car parts in order to render a photorealistic image of a specific car configuration. 
 
-We will use parser combinators to write a parser that extracts the configuration-specific data from such a webservice call.
+One task in a recent project was to extract configuration-specific data from a webservice URL. Let's see how parser combinators can be used to accomplish this task. Our customer's API is confident, so I have to anonymize the URLs.
 
 ## The webservice
 
@@ -44,6 +44,10 @@ The library is written in the functional programming language Haskell, but there
 
 As mentioned earlier, parser combinators are built up from simple building blocks combined to complex parsers. It's fascinating that all parsers are independent and can be executed on their own, so everything is easily maintainable and testable.
 
+> Functions in Haskell are defined by just assigning a value to a name. Parameters are just appended without braces. Type annotations are optional.
+> Your run-of-the-mill "add two numbers"-function looks like this:
+> `add x y = x + y`
+
 We're dealing with an URL, so even without knowing the specs, we can guess that we will encounter "things delimited by slashes". According to the webservice specifications, these "things" can only consist of characters and numbers. We'll start with a parser that reads these symbols between the slashes and call it `value`.
 
 ```
@@ -51,7 +55,7 @@ value = do
     many1 alphaNum
 ```
 
-Let's ignore the `do` for now and just assume it means "expect things in sequential order". In reality it has to do something with the [M-word](https://en.wikipedia.org/wiki/Monad_(functional_programming)), but that would go vastly beyond the scope of this article.
+> Let's ignore the `do` for now and just assume it means "expect things in sequential order and spare me the details". In reality it has to do something with the [M-word](https://en.wikipedia.org/wiki/Monad_(functional_programming)), but that would go vastly beyond the scope of this article.
 
 When run, `value` parses one or more (`many1`) letters or numbers (`alphaNum`). If the input matches these characters it will succeed, if it encounters any other symbol, it will fail. The `return` is implied: The result of the last line in our `do`-block is returned automatically.
 
@@ -197,7 +201,7 @@ twoChars = do
     return (x, y)
 ```
 
-You might remember me writing that the last line is always returned automatically, so what is this explicit `return` doing there? In Haskell, `return` doesn't work like return in most languages, it takes a value and wraps it in a context. If you actually want to know what's going on, I can recommend the excellent book [Learn You a Haskell For Great Good](http://learnyouahaskell.com/) by Miran Lipovača. If you're just here for the parsers, you can safely ignore it.
+> You might remember me writing that the last line is always returned automatically, so what is this explicit `return` doing there? In Haskell, `return` doesn't work like return in most languages, it takes a value and wraps it in a context. If you actually want to know what's going on, I can recommend the excellent book [Learn You a Haskell For Great Good](http://learnyouahaskell.com/) by Miran Lipovača. If you're just here for the parsers, you can safely ignore it.
 
 Wrapping it all up, here's our parser:
 
@@ -227,7 +231,7 @@ You can find the complete source code here: [parser.hs](https://gist.github.com/
 
 This barely touches the surface of what Parsec is able to do. If you want to read more, an excellect starting point is chapter 16 of [Real World Haskell](http://book.realworldhaskell.org/read/using-parsec.html) by Bryan O'Sullivan, Don Stewart, and John Goerzen. It goes into much more detail, but expects quite a bit of Haskell knowledge. Also you can [Write yourself a Scheme in 48 Hours](https://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours/Parsing) using Parsec.
 
-If you want to understand parser combinators in general, not necessarily only the Parsec library, check out Graham Hutton's great book [Programming in Haskell](http://www.cs.nott.ac.uk/~pszgmh/book.html).
+If you want to understand parser combinators in general, not necessarily only the Parsec library, check out Graham Hutton's great book [Programming in Haskell](http://www.cs.nott.ac.uk/~pszgmh/book.html). Erik Meijers [functional programming MOOC at edX](https://courses.edx.org/courses/DelftX/FP101x/3T2014/) also covered the topic.
 
 As mentioned earlier, there are parser combinator libraries for many languages, here's a short and in no way complete list:
 * [JParsec](https://github.com/jparsec/jparsec) for Java
