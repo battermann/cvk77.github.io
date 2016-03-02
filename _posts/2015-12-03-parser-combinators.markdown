@@ -38,7 +38,7 @@ As you can see, there is quite a bit of inconsistency that might cause some inco
 
 The basic idea of any parser combinator is that it takes an input, reads ("consumes") it until it’s either _done_ or _fails_, in both cases  returning the _result_ and the _remaining unparsed string_, which might be fed into subsequent parsers. In this example we will be using the [Parsec library](https://github.com/aslatter/parsec) to manage the grunt work for us. It seems well-suited for this task, it's quite readable and as straightforward as something that calls itself "industrial strength, monadic parser combinator" can be. 
 
-The library is written in the functional programming language Haskell, but there are many Parsec-clones in mainstream languages like Java, C#, Python or F#. To understand the examples in this post, you don't really need to understand Haskell though. The parsers itself are so tiny and readable that you should be able to understand what's going on without knowing the language.
+The library is written in the pure functional programming language Haskell, but there are many Parsec-clones in mainstream languages like Java, C#, Python or F#. To understand the examples in this post, you don't really need to understand Haskell. The parsers contain barely any syntax specific to Haskell which makes them much more readable than e.g. JParsec-code.
 
 ## Writing the parser
 
@@ -175,7 +175,9 @@ vehicle = do
     manyTill part (lookAhead customization)
 ```
 
-That's it, we don't need the rest (`skipMany`), but we should still consume it:
+This will first expect the string "/vehicle" and then run the `part` parser for as long as possible until our `customization` parser succeeds, but it will only consume the results of `parse`.
+
+That's it, we don't need the rest (`skipMany`), but we should still read it:
 
 ```
 theRest = do
@@ -198,7 +200,7 @@ twoChars = do
 Right 'y'
 ```
 
-That's nice, but how do we get to the first `x`? As each parser returns a result itself, we can just store that in a variable using the left arrow `<-` and return a tuple containing all variables. You don't have to return a tuple, you can use your favourite data structure.
+That's nice, but how do we get to the first `x`? As each parser returns a result itself, we can just store that in a variable using the left arrow `<-` and return a tuple containing all variables. You don't have to return a tuple, you can return whatever data type holds your values and matches your domain.
 
 ```
 twoChars = do
@@ -208,9 +210,10 @@ twoChars = do
     return (x, y)
 ```
 
-> You might remember me writing that the last line is always returned automatically, so what is this explicit `return` doing there? In Haskell, `return` doesn't work like return in most languages, it takes a value and wraps it in a context. If you actually want to know what's going on, I can recommend the excellent book [Learn You a Haskell For Great Good](http://learnyouahaskell.com/) by Miran Lipovača. If you're just here for the parsers, you can safely ignore it.
+> You might remember me writing that the last line is always returned automatically, so what is this explicit `return` doing there? In Haskell, `return` doesn't work like return in most languages: it takes a value and wraps it in a context. 
+> If you actually want to know what's going on, I can recommend the excellent book [Learn You a Haskell For Great Good](http://learnyouahaskell.com/) by Miran Lipovača. If you're just here for the parsers, you can safely ignore it.
 
-Wrapping it all up, here's our parser:
+Wrapping it all up, here's our complete parser:
 
 ```
 parser = do
@@ -236,7 +239,7 @@ You can find the complete source code here: [parser.hs](https://gist.github.com/
 
 ## What's next?
 
-This barely touches the surface of what Parsec is able to do. If you want to know more, an excellect starting point is chapter 16 of [Real World Haskell](http://book.realworldhaskell.org/read/using-parsec.html) by Bryan O'Sullivan, Don Stewart, and John Goerzen. It goes into much more detail, but expects quite a bit of Haskell knowledge. Also you can [Write yourself a Scheme in 48 Hours](https://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours/Parsing) using Parsec.
+This barely touches the surface of what Parsec is able to do. If you're interesting in learning more, an excellect starting point is chapter 16 of [Real World Haskell](http://book.realworldhaskell.org/read/using-parsec.html) by Bryan O'Sullivan, Don Stewart, and John Goerzen. It goes into much more detail, but expects quite a bit of Haskell knowledge. Also you can [Write yourself a Scheme in 48 Hours](https://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours/Parsing) using Parsec.
 
 If you want to understand parser combinators in general, not necessarily only the Parsec library, check out Graham Hutton's great book [Programming in Haskell](http://www.cs.nott.ac.uk/~pszgmh/book.html). Erik Meijers [functional programming MOOC at edX](https://courses.edx.org/courses/DelftX/FP101x/3T2014/) also covers the topic, closely following Hutton's book.
 
