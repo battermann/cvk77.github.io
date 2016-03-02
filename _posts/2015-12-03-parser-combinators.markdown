@@ -38,7 +38,11 @@ As you can see, there is quite a bit of inconsistency that might cause some inco
 
 The basic idea of any parser combinator is that it takes an input, reads ("consumes") it until it’s either _done_ or _fails_, in both cases  returning the _result_ and the _remaining unparsed string_, which might be fed into subsequent parsers. In this example we will be using the [Parsec library](https://github.com/aslatter/parsec) to manage the grunt work for us. It seems well-suited for this task, it's quite readable and as straightforward as something that calls itself "industrial strength, monadic parser combinator" can be. 
 
-The library is written in the pure functional programming language Haskell, but there are many Parsec-clones in mainstream languages like Java, C#, Python or F#. To understand the examples in this post, you don't really need to understand Haskell. The parsers contain barely any syntax specific to Haskell which makes them much more readable than e.g. JParsec-code.
+The library is written in the pure functional programming language Haskell, but there are many Parsec-clones in mainstream languages like Java, C#, Python or F#. To understand the examples in this post, you don't really need to understand Haskell, though. 
+
+I chose Haskell for the code examples because the parsers contain barely any language-specific syntax which makes them much more readable than e.g. JParsec-code, almost like pseudo code. 
+
+> Although the goal of this post is not to teach you Haskell, you'll find some ressources in the last section.
 
 ## Writing the parser
 
