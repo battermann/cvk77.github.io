@@ -10,7 +10,7 @@ One task in a recent project was to extract configuration-specific data from a w
 
 ## The webservice
 
-As mentioned before, the URL format is quite straightforward, but at first glance it seems to be more human-friendly than machine-friendly, but more about that later. It consists of the following parts:
+As mentioned before, the URL scheme is quite straightforward, but it seems to be more human-friendly than machine-friendly, but more about that later. It consists of the following parts:
 
 1. The country version's iso code
 1. Car metadata (model is mandatory, body and grade are optional)
@@ -32,32 +32,33 @@ https://example.org
     /exterior-45.jpg
 ```
 
-As you can see, there is quite a bit of inconsistency: the country code doesn't have a qualifier, the car model, body and grade info are delimited by slashes, the other fields are delimited by commas.
+As you can see, there is quite a bit of inconsistency that might cause some inconvenience while parsing: the country code doesn't have a qualifier, the car model, body and grade info are delimited by slashes, the other fields are delimited by commas. Also there's some information encoded in the filename, but we can ignore that as we're only parsing the car configuration, not the image metadata.
 
 ## The library
 
-The basic idea of a parser is that it takes an input, reads ("consumes") it until it’s either _done_ or _fails_, in both cases  returning the _result_ and the _remaining unparsed string_, which might be fed into subsequent parsers. In this example we will be using the [Parsec library](https://github.com/aslatter/parsec) to manage the grunt work for us. It seems well-suited for this task, it's quite readable and as straightforward as something that calls itself "industrial strength, monadic parser combinator" can be. 
+The basic idea of any parser combinator is that it takes an input, reads ("consumes") it until it’s either _done_ or _fails_, in both cases  returning the _result_ and the _remaining unparsed string_, which might be fed into subsequent parsers. In this example we will be using the [Parsec library](https://github.com/aslatter/parsec) to manage the grunt work for us. It seems well-suited for this task, it's quite readable and as straightforward as something that calls itself "industrial strength, monadic parser combinator" can be. 
 
 The library is written in the functional programming language Haskell, but there are many Parsec-clones in mainstream languages like Java, C#, Python or F#. To understand the examples in this post, you don't really need to understand Haskell though. The parsers itself are so tiny any readable that you should be able to understand what's going on without knowing the language.
 
 ## Writing the parser
 
-As mentioned earlier, parser combinators are built up from simple building blocks combined to complex parsers. It's fascinating that all parsers are independent and can be executed on their own, so everything is easily maintainable and testable.
+As mentioned earlier, parser combinators are built up from simple building blocks combined to complex parsers. There are quite a lot predefined parsers for common tasks that we can re-use and combine. It's fascinating that all parsers are independent and can be executed on their own, so everything is easily maintainable and testable.
 
-> Functions in Haskell are defined by just assigning a value to a name. Parameters are just appended without braces. Type annotations are optional.
-> Your run-of-the-mill "add two numbers"-function looks like this:
-> `add x y = x + y`
+> Functions in Haskell are defined by just assigning a value to a name. Parameters are just appended without braces. 
+> Type annotations are optional. Constants are just parameterless functions: `n = 2`, your run-of-the-mill 
+> "add two numbers"-function might look like this: `add x y = x + y`.
+> Haskell supports [currying and partial application](https://wiki.haskell.org/Currying).
 
-We're dealing with an URL, so even without knowing the specs, we can guess that we will encounter "things delimited by slashes". According to the webservice specifications, these "things" can only consist of characters and numbers. We'll start with a parser that reads these symbols between the slashes and call it `value`.
+We're dealing with an URL, so even without knowing the specs, we can guess that we will encounter "things delimited by slashes". According to the webservice specification, these "things" can only consist of characters and numbers. We'll start with a parser that reads these symbols between the slashes and call it `value`.
 
 ```
 value = do
     many1 alphaNum
 ```
 
-> Let's ignore the `do` for now and just assume it means "expect things in sequential order and spare me the details". In reality it has to do something with the [M-word](https://en.wikipedia.org/wiki/Monad_(functional_programming)), but that would go vastly beyond the scope of this article.
+`many1` and `alphaNum` are parsers already defined in the libray. When run, our combined parser expects one or more (`many1`) alphanumeric symbols, i.e. letters or numbers (`alphaNum`). If the input matches these characters it will succeed, if it encounters any other symbol, it will fail. The result of the last line in our `do`-block is returned automatically.
 
-When run, `value` parses one or more (`many1`) letters or numbers (`alphaNum`). If the input matches these characters it will succeed, if it encounters any other symbol, it will fail. The `return` is implied: The result of the last line in our `do`-block is returned automatically.
+> Let's ignore the fact that the function doesn't have an explicit input value and just assume that the `do` means "read something from somewhere, expect input in sequential order and spare me the details". In reality it has to do something with the [M-word](https://en.wikipedia.org/wiki/Monad_(functional_programming)), but that would go vastly beyond the scope of this article.
 
 The webservice specifications also allow the use of "+" and "-" in values, so we'll need to add these to our parser using the `<|>`-operator that basically just means "or":
 
@@ -65,6 +66,8 @@ The webservice specifications also allow the use of "+" and "-" in values, so we
 value = do
     many1 (alphaNum <|> char '+' <|> char '-')
 ```
+
+This might now be the most elegant solution, but it's very readable. Another option could be to use `... <|> oneOf "+-"`.
 
 Now we have everything we need to combine this parser to another parser that reads the separate parts of our URL (you remember: things delimited by slashes). For lack of a better name, let's call it `part`.
 
