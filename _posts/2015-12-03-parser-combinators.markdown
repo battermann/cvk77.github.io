@@ -234,9 +234,9 @@ You can find the complete source code here: [parser.hs](https://gist.github.com/
 
 ## What's next?
 
-This barely touches the surface of what Parsec is able to do. If you want to read more, an excellect starting point is chapter 16 of [Real World Haskell](http://book.realworldhaskell.org/read/using-parsec.html) by Bryan O'Sullivan, Don Stewart, and John Goerzen. It goes into much more detail, but expects quite a bit of Haskell knowledge. Also you can [Write yourself a Scheme in 48 Hours](https://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours/Parsing) using Parsec.
+This barely touches the surface of what Parsec is able to do. If you want to know more, an excellect starting point is chapter 16 of [Real World Haskell](http://book.realworldhaskell.org/read/using-parsec.html) by Bryan O'Sullivan, Don Stewart, and John Goerzen. It goes into much more detail, but expects quite a bit of Haskell knowledge. Also you can [Write yourself a Scheme in 48 Hours](https://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours/Parsing) using Parsec.
 
-If you want to understand parser combinators in general, not necessarily only the Parsec library, check out Graham Hutton's great book [Programming in Haskell](http://www.cs.nott.ac.uk/~pszgmh/book.html). Erik Meijers [functional programming MOOC at edX](https://courses.edx.org/courses/DelftX/FP101x/3T2014/) also covered the topic.
+If you want to understand parser combinators in general, not necessarily only the Parsec library, check out Graham Hutton's great book [Programming in Haskell](http://www.cs.nott.ac.uk/~pszgmh/book.html). Erik Meijers [functional programming MOOC at edX](https://courses.edx.org/courses/DelftX/FP101x/3T2014/) also covers the topic, closely following Hutton's book.
 
 As mentioned earlier, there are parser combinator libraries for many languages, here's a short and in no way complete list:
 * [JParsec](https://github.com/jparsec/jparsec) for Java
