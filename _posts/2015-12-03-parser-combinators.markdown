@@ -121,7 +121,7 @@ We'll skip the vehicle part for now and implement the parsers for the car custom
 
 ```
 commaDelimited = do
-    value `sepBy` (char ',')
+    sepBy value (char ',')
 ```
 
 In the REPL this looks like this:
