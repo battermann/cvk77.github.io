@@ -1,24 +1,38 @@
-# Parser combinators
+# How to write parsing code that is clean
 
-When tasked to extract information from a string, most seasoned developers - especially the ones with some kind of Linux background - will resort to regular expressions. While regular expressions are incredibly powerful and very well suited for most parsing jobs, they don't scale very well. With increasing complexity they tend to become very cryptic, if not unreadable.
+<!-- headlines
+Parsing URLs with parser combinators
+An efficient way to parse URL strings
+How to parse URL using parser combinators
+How to write parsing code that is clean
+Do you want to be make your parsing code more efficient?
+Is it possible to write concise and clean parsing code?
+Learn parser combinators by example
+Applying parser combinators in the real world
+The reason why you should learn about parser combinators
+"How parser combinators helped me writing much cleaner code"
 
-Another alternative is to use parser combinators that combine small atomic parsers to build a complex ruleset.
+-->
 
-Let's see how parser combinators can be used in an (admittedly simple) context. One of our customers runs a fascinating webservice: Using a easy-to-understand URL scheme, you can remotely control a rendering engine that can effectively combines hundreds of different car parts in order to render a photorealistic image of a specific car configuration. One task in a recent project was to extract car configuration data from a webservice call. I solved it in just a few lines of easily maintainable code using JParsec.
+When tasked to extract information from a string, most seasoned developers - especially the ones with some kind of Linux background - will resort to regular expressions. While regular expressions are incredibly powerful and very well suited for most parsing jobs, they don't scale very well. With increasing complexity they tend to become very cryptic, if not unreadable and therefore eventually unmaintainable.
+
+Another alternative is to use parser combinators that combine small atomic parsers to build a complex rule set.
+
+Let's see how parser combinators can be used in an (admittedly simple) context. One of our customers runs a fascinating web service: Using a easy-to-understand URL scheme, you can remotely control a rendering engine that can effectively combines hundreds of different car parts in order to render a photo-realistic image of a specific car configuration. One task in a recent project was to extract car configuration data from a web service call. I solved it in just a few lines of easily maintainable code using JParsec.
 
 Our customer's API is confidential, so I have to anonymize the URLs.
 
-## The webservice
+## A real world example
 
 As mentioned before, the URL scheme is quite straightforward, but it seems to be more human-friendly than machine-friendly, but more about that later. It consists of the following parts:
 
-1. The country version's iso code
+1. The country version's ISO code
 1. Car metadata (model is mandatory, body and grade are optional)
 1. Optional codes for
     1. option codes
     1. equipment packs
     1. accessories
-1. Image metadata like resolution, background colour and car angle.
+1. Image metadata like resolution, background colour and car angle
 
 ```
 https://example.org
@@ -34,19 +48,22 @@ https://example.org
 
 As you can see, there is quite a bit of inconsistency that might cause some inconvenience while parsing: the country code doesn't have a qualifier, the car model, body and grade info are delimited by slashes, the other fields are delimited by commas. Also there's some information encoded in the filename, but we can ignore that as we're only parsing the car configuration, not the image metadata.
 
-## The library
+## The right tool for our task
 
-The basic idea of any parser combinator is that it takes an input, reads ("consumes") it until it’s either _done_ or _fails_, in both cases  returning the _result_ and the _remaining unparsed string_, which might be fed into subsequent parsers. In this example we will be using the [Parsec library](https://github.com/aslatter/parsec) to manage the grunt work for us. It seems well-suited for this task, it's quite readable and as straightforward as something that calls itself "industrial strength, monadic parser combinator" can be and there are many clones and implementations in various programming languages.
+The basic idea of any parser combinator is that it takes an input, reads ("consumes") it until it is either _done_ or _fails_, in both cases returning the _result_ and the _remaining unparsed string_, which might be fed into subsequent parsers. In this example we will be using the [Parsec library](https://github.com/aslatter/parsec) to manage the grunt work for us. It seems well-suited for this task, it's quite readable and as straightforward as something that calls itself "industrial strength, monadic parser combinator" can be.
 
-Parsec is written in the pure functional programming language Haskell, but to understand the examples in this post, you won't need to understand Haskell. I chose Haskell for the code examples because the parsers contain barely any language-specific syntax, all the handling is nicely kept away from us, making the code almost look like pseudo code.
+The library is written in the pure functional programming language Haskell, but there are many Parsec-clones in mainstream languages like Java, C#, Python or F#. To understand the examples in this post, you don't really need to understand Haskell, though. I chose Haskell for the code examples because the parsers contain barely any language-specific syntax, all the handling is nicely kept away from us, making the code almost look like pseudo code.
 
 ## Writing the parser
 
 As mentioned earlier, parser combinators are built up from simple building blocks combined to complex parsers. There are quite a lot predefined parsers for common tasks that we can re-use and combine. It's fascinating that all parsers are independent and can be executed on their own, so everything is easily maintainable and testable.
 
-We're dealing with an URL, so even without knowing the specs, we can guess that we will encounter "things delimited by slashes". According to the webservice specification, these "things" can only consist of characters and numbers. We'll start with a parser that reads these _symbols between the slashes_ and call it `value`.
+> Functions in Haskell are defined by just assigning a value to a name. Types are inferred by the compiler and type annotations are recommended but optional.
+> Haskell doesn't need parentheses around and commas between function parameters, Just keep in mind that function application is left-associative, so this won't work: `print 1 + 2` as it would try to add `2` to the return value of `print 1`. You will need parentheses here: `print (1 + 2)`.
 
-> Functions in Haskell are defined by just assigning a value to a name. Haskell doesn't need parentheses around and commas between function parameters.
+### Parsing characters and letters
+
+We're dealing with an URL, so even without knowing the specs, we can guess that we will encounter "things delimited by slashes". According to the web service specification, these "things" can only consist of characters and numbers. We'll start with a parser that reads these symbols between the slashes and call it `value`.
 
 ```
 value = do
@@ -55,11 +72,11 @@ value = do
 
 `many1` and `alphaNum` are parsers already defined in the Parsec library. When run, our combined parser expects one or more (`many1`) alphanumeric symbols, i.e. letters or numbers (`alphaNum`). If the input matches these characters it will succeed, if it encounters any other symbol, it will fail. The result of the last line in our `do`-block is returned automatically.
 
-> Let's ignore the fact that the function doesn't have an explicit input value and just assume that in the scope of this article `do` means "expect input in sequential order and spare me the details". To explain what's actually going on under the hood would go beyond the scope of this article, but there are some excellent Haskell ressources linked in the last section.
+> Let's ignore the fact that the function doesn't have an explicit input value and just assume that the `do` means "read something from somewhere, expect input in sequential order and spare me the details". To explain what's actually going on under the hood would go beyond the scope of this article, but there are some excellent Haskell resources linked in the last section.
 
-I lied when I said that values can consist only of alphanumeric characters. Actually the webservice specifications also allow the use of "+" and "-", so we'll need to add these to our parser. A nice way to achieve this is to use the `<|>`-operator that basically just means "or":
+### Using the 'or' operator
 
-> Function application is left-associative, so this won't work: `print 1 + 2` as it would try to add `2` to the return value of `print 1`. You will need parentheses here: `print (1 + 2)`.
+I lied when I said that values can consist only of alphanumeric characters. Actually the web service specifications also allow the use of "+" and "-", so we'll need to add these to our parser. A nice way to achieve this is to use the `<|>`-operator that basically just means "or":
 
 ```
 value = do
@@ -78,7 +95,7 @@ part = do
 
 This does exactly what you might expect: It reads the character "/" and then a `value` as defined before.
 
-I mentioned earlier that parser functions either return the value or fail. In most imperative programming languages, failing usually means that some kind of error or exception will be thrown. Our parsers work a bit differently: Haskell has an datatype called `Either` that represents values with two possibilities called `Left` and `Right`. By convention, `Left` is used to hold an error value and `Right` is used to hold a correct value. You'll see in a minute how that looks.
+I mentioned earlier that parser functions either return the value or fail. In most imperative programming languages, failing usually means that some kind of error or exception will be thrown. Our parsers work a bit differently: Haskell has a special type called `Either` that represents values with two possibilities called `Left` and `Right`. By convention, `Left` is used to hold an error value and `Right` is used to hold a correct value. You'll see in a minute how that looks.
 
 Let's confirm in Haskell's REPL that our parsers work. For this we'll use the `parse` helper function that expects the following parameters: the parser to execute, a context name (that we'll just leave empty) and the input string. 
 
@@ -93,6 +110,8 @@ expecting "/"
 ```
 
 The results should be self explanatory: The first parser succeeded, returning a `Right` with the parsed string. The second call failed, returning a `Left` with a detailed error message. 
+
+### Now let's start to do some real work
 
 Now let's start to do some real work and write a parser that reads the first part of the URL including the country code and return that. The protocol can be either "http" or "https", so we need to take care of both options, for the rest we can reuse our `part`-parser. 
 
