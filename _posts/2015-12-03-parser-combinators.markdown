@@ -46,7 +46,7 @@ As mentioned earlier, parser combinators are built up from simple building block
 
 We're dealing with an URL, so even without knowing the specs, we can guess that we will encounter "things delimited by slashes". According to the webservice specification, these "things" can only consist of characters and numbers. We'll start with a parser that reads these _symbols between the slashes_ and call it `value`.
 
-> Functions in Haskell are defined by just assigning a value to a name. Function parameters are optional, a function without parameters returns a constant value. Haskell doesn't need parentheses around and commas between function parameters.
+> Functions in Haskell are defined by just assigning a value to a name. Haskell doesn't need parentheses around and commas between function parameters.
 
 ```
 value = do
@@ -55,7 +55,7 @@ value = do
 
 `many1` and `alphaNum` are parsers already defined in the Parsec library. When run, our combined parser expects one or more (`many1`) alphanumeric symbols, i.e. letters or numbers (`alphaNum`). If the input matches these characters it will succeed, if it encounters any other symbol, it will fail. The result of the last line in our `do`-block is returned automatically.
 
-> Let's ignore the fact that the function doesn't have an explicit input value and just assume that the `do` means "read something from somewhere, expect input in sequential order and spare me the details". To explain what's actually going on under the hood would go beyond the scope of this article, but there are some excellent Haskell ressources linked in the last section.
+> Let's ignore the fact that the function doesn't have an explicit input value and just assume that in the scope of this article `do` means "expect input in sequential order and spare me the details". To explain what's actually going on under the hood would go beyond the scope of this article, but there are some excellent Haskell ressources linked in the last section.
 
 I lied when I said that values can consist only of alphanumeric characters. Actually the webservice specifications also allow the use of "+" and "-", so we'll need to add these to our parser. A nice way to achieve this is to use the `<|>`-operator that basically just means "or":
 
