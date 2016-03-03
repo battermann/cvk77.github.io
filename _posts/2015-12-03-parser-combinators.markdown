@@ -36,18 +36,17 @@ As you can see, there is quite a bit of inconsistency that might cause some inco
 
 ## The library
 
-The basic idea of any parser combinator is that it takes an input, reads ("consumes") it until it’s either _done_ or _fails_, in both cases  returning the _result_ and the _remaining unparsed string_, which might be fed into subsequent parsers. In this example we will be using the [Parsec library](https://github.com/aslatter/parsec) to manage the grunt work for us. It seems well-suited for this task, it's quite readable and as straightforward as something that calls itself "industrial strength, monadic parser combinator" can be.
+The basic idea of any parser combinator is that it takes an input, reads ("consumes") it until it’s either _done_ or _fails_, in both cases  returning the _result_ and the _remaining unparsed string_, which might be fed into subsequent parsers. In this example we will be using the [Parsec library](https://github.com/aslatter/parsec) to manage the grunt work for us. It seems well-suited for this task, it's quite readable and as straightforward as something that calls itself "industrial strength, monadic parser combinator" can be and there are many clones and implementations in various programming languages.
 
-The library is written in the pure functional programming language Haskell, but there are many Parsec-clones in mainstream languages like Java, C#, Python or F#. To understand the examples in this post, you don't really need to understand Haskell, though. I chose Haskell for the code examples because the parsers contain barely any language-specific syntax, all the handling is nicely kept away from us, making the code almost look like pseudo code.
+Parsec is written in the pure functional programming language Haskell, but to understand the examples in this post, you won't need to understand Haskell. I chose Haskell for the code examples because the parsers contain barely any language-specific syntax, all the handling is nicely kept away from us, making the code almost look like pseudo code.
 
 ## Writing the parser
 
 As mentioned earlier, parser combinators are built up from simple building blocks combined to complex parsers. There are quite a lot predefined parsers for common tasks that we can re-use and combine. It's fascinating that all parsers are independent and can be executed on their own, so everything is easily maintainable and testable.
 
-> Functions in Haskell are defined by just assigning a value to a name. Types are inferred by the compiler and type annotations are recommended but optional.
-> Haskell doesn't need parentheses around and commas between function parameters, Just keep in mind that function application is left-associative, so this won't work: `print 1 + 2` as it would try to add `2` to the return value of `print 1`. You will need parentheses here: `print (1 + 2)`.
+We're dealing with an URL, so even without knowing the specs, we can guess that we will encounter "things delimited by slashes". According to the webservice specification, these "things" can only consist of characters and numbers. We'll start with a parser that reads these _symbols between the slashes_ and call it `value`.
 
-We're dealing with an URL, so even without knowing the specs, we can guess that we will encounter "things delimited by slashes". According to the webservice specification, these "things" can only consist of characters and numbers. We'll start with a parser that reads these symbols between the slashes and call it `value`.
+> Functions in Haskell are defined by just assigning a value to a name. Function parameters are optional, a function without parameters returns a constant value. Haskell doesn't need parentheses around and commas between function parameters.
 
 ```
 value = do
@@ -59,6 +58,8 @@ value = do
 > Let's ignore the fact that the function doesn't have an explicit input value and just assume that the `do` means "read something from somewhere, expect input in sequential order and spare me the details". To explain what's actually going on under the hood would go beyond the scope of this article, but there are some excellent Haskell ressources linked in the last section.
 
 I lied when I said that values can consist only of alphanumeric characters. Actually the webservice specifications also allow the use of "+" and "-", so we'll need to add these to our parser. A nice way to achieve this is to use the `<|>`-operator that basically just means "or":
+
+> Function application is left-associative, so this won't work: `print 1 + 2` as it would try to add `2` to the return value of `print 1`. You will need parentheses here: `print (1 + 2)`.
 
 ```
 value = do
