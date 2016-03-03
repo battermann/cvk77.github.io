@@ -2,11 +2,11 @@
 
 When tasked to extract information from a string, most seasoned developers - especially the ones with some kind of Linux background - will resort to regular expressions. While regular expressions are incredibly powerful and very well suited for most parsing jobs, they don't scale very well. With increasing complexity they tend to become very cryptic, if not unreadable.
 
-In functional programming, it's common to use parser combinators that combine small atomic parsers to build a complex ruleset.
+Another alternative is to use parser combinators that combine small atomic parsers to build a complex ruleset.
 
-Let's see how parser combinators can be used in an (admittedly simple) context. One of our customers runs a fascinating webservice: Using a easy-to-understand URL scheme, you can remotely control a rendering engine that can effectively combines hundreds of different car parts in order to render a photorealistic image of a specific car configuration. 
+Let's see how parser combinators can be used in an (admittedly simple) context. One of our customers runs a fascinating webservice: Using a easy-to-understand URL scheme, you can remotely control a rendering engine that can effectively combines hundreds of different car parts in order to render a photorealistic image of a specific car configuration. One task in a recent project was to extract car-configuration-specific data from a webservice URL and I solved it in just a few lines of easily maintainable code using JParsec.
 
-One task in a recent project was to extract configuration-specific data from a webservice URL. Let's see how parser combinators can be used to accomplish this task. Our customer's API is confident, so I have to anonymize the URLs.
+Our customer's API is confident, so I have to anonymize the URLs.
 
 ## The webservice
 
@@ -36,9 +36,9 @@ As you can see, there is quite a bit of inconsistency that might cause some inco
 
 ## The library
 
-The basic idea of any parser combinator is that it takes an input, reads ("consumes") it until it’s either _done_ or _fails_, in both cases  returning the _result_ and the _remaining unparsed string_, which might be fed into subsequent parsers. In this example we will be using the [Parsec library](https://github.com/aslatter/parsec) to manage the grunt work for us. It seems well-suited for this task, it's quite readable and as straightforward as something that calls itself "industrial strength, monadic parser combinator" can be. 
+The basic idea of any parser combinator is that it takes an input, reads ("consumes") it until it’s either _done_ or _fails_, in both cases  returning the _result_ and the _remaining unparsed string_, which might be fed into subsequent parsers. In this example we will be using the [Parsec library](https://github.com/aslatter/parsec) to manage the grunt work for us. It seems well-suited for this task, it's quite readable and as straightforward as something that calls itself "industrial strength, monadic parser combinator" can be.
 
-The library is written in the pure functional programming language Haskell, but there are many Parsec-clones in mainstream languages like Java, C#, Python or F#. To understand the examples in this post, you don't really need to understand Haskell, though. I chose Haskell for the code examples because the parsers contain barely any language-specific syntax which makes them much more readable than e.g. JParsec-code, almost like pseudo code.
+The library is written in the pure functional programming language Haskell, but there are many Parsec-clones in mainstream languages like Java, C#, Python or F#. To understand the examples in this post, you don't really need to understand Haskell, though. I chose Haskell for the code examples because the parsers contain barely any language-specific syntax, all the handling is nicely kept away from us, making the code almost look like pseudo code.
 
 ## Writing the parser
 
@@ -56,7 +56,7 @@ value = do
 `many1` and `alphaNum` are parsers already defined in the Parsec library. When run, our combined parser expects one or more (`many1`) alphanumeric symbols, i.e. letters or numbers (`alphaNum`). If the input matches these characters it will succeed, if it encounters any other symbol, it will fail. The result of the last line in our `do`-block is returned automatically.
 
 > Let's ignore the fact that the function doesn't have an explicit input value and just assume that the `do` means "read something from somewhere, expect input in sequential order and spare me the details". In reality it has to do something with the [M-word](https://en.wikipedia.org/wiki/Monad_(functional_programming)), but that would go vastly beyond the scope of this article.
-> You might have noticed that Haskell doesn't always need parentheses around and commas between function parameters. Function application is left-associative, so this won't work: `print 1 + 2` as it would try to add `2` to the return value of `print 1`. You will need parentheses here: `print (1+2)`.
+> You might have noticed that Haskell doesn't always need parentheses around and commas between function parameters. Function application is left-associative, so this won't work: `print 1 + 2` as it would try to add `2` to the return value of `print 1`. You will need parentheses here: `print (1 + 2)`.
 
 I lied when I said that values can consist only of alphanumeric characters. Actually the webservice specifications also allow the use of "+" and "-", so we'll need to add these to our parser. A nice way to achieve this is to use the `<|>`-operator that basically just means "or":
 
@@ -200,7 +200,7 @@ twoChars = do
 Right 'y'
 ```
 
-That's nice, but how do we get to the first `x`? As each parser returns a result itself, we can just store that in a variable using the left arrow `<-` and return a tuple containing all variables. You don't have to return a tuple, you can return whatever data type holds your values and matches your domain.
+That's nice, but how do we get to the first `x`? As each parser returns a result itself, we can just pull it out and store it in a variable using the left arrow `<-` and return a tuple containing all variables. You don't have to return a tuple, you can return whatever data type holds your values and matches your domain.
 
 ```
 twoChars = do
@@ -210,7 +210,7 @@ twoChars = do
     return (x, y)
 ```
 
-> You might remember me writing that the last line is always returned automatically, so what is this explicit `return` doing there? In Haskell, `return` doesn't work like return in most languages: it takes a value and wraps it in a context. 
+> You might remember me writing that the last line is always returned automatically, so what is this explicit `return` doing there? In Haskell, `return` doesn't work like return in most languages: it takes a value and wraps it in a context.
 > If you actually want to know what's going on, I can recommend the excellent book [Learn You a Haskell For Great Good](http://learnyouahaskell.com/) by Miran Lipovača. If you're just here for the parsers, you can safely ignore it.
 
 Wrapping it all up, here's our complete parser:
