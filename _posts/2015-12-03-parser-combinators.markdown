@@ -243,7 +243,7 @@ This barely touches the surface of what Parsec is able to do. If you're interest
 
 If you want to understand parser combinators in general, not necessarily only the Parsec library, check out Graham Hutton's great book [Programming in Haskell](http://www.cs.nott.ac.uk/~pszgmh/book.html). Erik Meijers [functional programming MOOC at edX](https://courses.edx.org/courses/DelftX/FP101x/3T2014/) also covers the topic, closely following Hutton's book.
 
-As mentioned earlier, there are parser combinator libraries for many languages, here's a short and in no way complete list:
+As mentioned earlier, there are parser combinator libraries for many languages, here's a short and by no means complete list:
 * [JParsec](https://github.com/jparsec/jparsec) for Java
 * [FParsec](http://www.quanttec.com/fparsec/) for F#
 * [PyParsing](http://pyparsing.wikispaces.com/) for Python
