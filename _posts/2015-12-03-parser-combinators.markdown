@@ -45,6 +45,7 @@ The library is written in the pure functional programming language Haskell, but 
 As mentioned earlier, parser combinators are built up from simple building blocks combined to complex parsers. There are quite a lot predefined parsers for common tasks that we can re-use and combine. It's fascinating that all parsers are independent and can be executed on their own, so everything is easily maintainable and testable.
 
 > Functions in Haskell are defined by just assigning a value to a name. Types are inferred by the compiler and type annotations are recommended but optional.
+> Haskell doesn't need parentheses around and commas between function parameters, Just keep in mind that function application is left-associative, so this won't work: `print 1 + 2` as it would try to add `2` to the return value of `print 1`. You will need parentheses here: `print (1 + 2)`.
 
 We're dealing with an URL, so even without knowing the specs, we can guess that we will encounter "things delimited by slashes". According to the webservice specification, these "things" can only consist of characters and numbers. We'll start with a parser that reads these symbols between the slashes and call it `value`.
 
@@ -55,8 +56,7 @@ value = do
 
 `many1` and `alphaNum` are parsers already defined in the Parsec library. When run, our combined parser expects one or more (`many1`) alphanumeric symbols, i.e. letters or numbers (`alphaNum`). If the input matches these characters it will succeed, if it encounters any other symbol, it will fail. The result of the last line in our `do`-block is returned automatically.
 
-> Let's ignore the fact that the function doesn't have an explicit input value and just assume that the `do` means "read something from somewhere, expect input in sequential order and spare me the details". In reality it has to do something with the [M-word](https://en.wikipedia.org/wiki/Monad_(functional_programming)), but that would go vastly beyond the scope of this article.
-> You might have noticed that Haskell doesn't always need parentheses around and commas between function parameters. Function application is left-associative, so this won't work: `print 1 + 2` as it would try to add `2` to the return value of `print 1`. You will need parentheses here: `print (1 + 2)`.
+> Let's ignore the fact that the function doesn't have an explicit input value and just assume that the `do` means "read something from somewhere, expect input in sequential order and spare me the details". To explain what's actually going on under the hood would go beyond the scope of this article, but there are some excellent Haskell ressources linked in the last section.
 
 I lied when I said that values can consist only of alphanumeric characters. Actually the webservice specifications also allow the use of "+" and "-", so we'll need to add these to our parser. A nice way to achieve this is to use the `<|>`-operator that basically just means "or":
 
