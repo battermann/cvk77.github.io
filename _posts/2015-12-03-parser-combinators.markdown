@@ -6,7 +6,7 @@ Another alternative is to use parser combinators that combine small atomic parse
 
 Let's see how parser combinators can be used in an (admittedly simple) context. One of our customers runs a fascinating webservice: Using a easy-to-understand URL scheme, you can remotely control a rendering engine that can effectively combines hundreds of different car parts in order to render a photorealistic image of a specific car configuration. One task in a recent project was to extract car-configuration-specific data from a webservice URL and I solved it in just a few lines of easily maintainable code using JParsec.
 
-Our customer's API is confident, so I have to anonymize the URLs.
+Our customer's API is confidential, so I have to anonymize the URLs.
 
 ## The webservice
 
